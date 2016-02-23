@@ -1,6 +1,30 @@
 
 var language = "en";
 
+
+function parseLabel(data, id){
+  return data.entities[id].labels[language].value;
+}
+
+function parseDescription(data, id){
+  return data.entities[id].descriptions[language].value;
+}
+
+function parseAliases(data, id){
+  var ret = "";
+  var aliasesJson = data.entities[id].aliases[language];
+  if (aliasesJson != undefined) {
+	for (var entry in aliasesJson){
+	  if (entry == 0){
+		ret = aliasesJson[entry].value;
+	  } else {
+		ret = ret + " | " + aliasesJson[entry].value;
+	  }
+	}
+  }
+  return ret;
+}
+
 function httpRequest($http, $q, url){
   return $http.get(url).then(function(response) {
 	if (typeof response.data === 'object') {
@@ -72,18 +96,9 @@ function parseClassDataFromJson ( data, qid ){
 		aliases: ""
 	};
 	try {
-	  ret.label = data.entities[qid].labels[language].value;
-	  ret.description = data.entities[qid].descriptions[language].value;
-	  aliasesJson = data.entities[qid].aliases[language];
-	  if (aliasesJson != undefined) {
-		for (var entry in aliasesJson){
-		  if (entry == 0){
-			ret.aliases = aliasesJson[entry].value;
-		  } else {
-			ret.aliases = ret.aliases + " | " + aliasesJson[entry].value;
-		  }
-		}
-	  }
+	  ret.label = parseLabel(data, qid);
+	  ret.description = parseDescription(data, qid);
+	  ret.aliases = parseAliases(data, qid);
 	  var imageJson = data.entities[qid].claims.P18;
 	  if (imageJson == undefined) {
 		ret.image = "http://commons.wikimedia.org/w/thumb.php?f=MA_Route_blank.svg&w=50";
