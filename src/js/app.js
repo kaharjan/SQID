@@ -41,11 +41,11 @@ var util = {
 	var ret = [];
 	try {
 	  var relProps = json[qid][util.JSON_RELATED_PROPERTIES];
+	  for (var prop in relProps){
+	    ret.push(prop);
+	  }
 	}
 	catch (e){}
-	for (var prop in relProps){
-	  ret.push(prop);
-	}
 	return ret;
   }
 

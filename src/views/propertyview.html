@@ -5,4 +5,9 @@
 <br>
 <b>Aliases:</b> {{propertyData.aliases}}<br>
 <b>Description:</b> {{propertyData.description}}<br>
+
+<b>Related Properties:</b>
+<table>         <tr ng-repeat="property in relatedProperties">
+                <td> {{property}} </td>
+              </tr></table>
 </div>
