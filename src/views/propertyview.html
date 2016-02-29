@@ -3,18 +3,15 @@
 <br>
 <div class="alert alert-warning" role="alert">This will be a property view.</div>
 <br>
-<b>Aliases:</b> {{propertyData.aliases}}<br>
+
+<b>Aliases:</b> <span ng-repeat="alias in propertyData.aliases">{{alias}} {{$last ? '' : ' | '}}  </span><br>
 <b>Description:</b> {{propertyData.description}}<br>
-<b>Uses in statements:</b> {{propertyNumbers.statements}} <br>
-<b>Items with such statements:</b> {{propertyNumbers.items}} <br>
-<b>Uses in statements with qualifiers:</b> {{propertyNumbers.statements_qualifiers}} <br>
-<b>Uses in qualifiers:</b> {{propertyNumbers.qualifiers}} <br>
-<b>Uses in references:</b> {{propertyNumbers.references}} <br>
-<b>Uses in properties:</b> {{propertyNumbers.properties}} <br>
-<b>Uses in total:</b> {{propertyNumbers.total}} <br>
+<b>Uses in statements:</b> {{statementCount}} <br>
+<b>Items with such statements:</b> {{itemCount}} <br>
+<b>Uses in qualifiers:</b> {{qualifierCount}} <br>
+<b>Uses in references:</b> {{referenceCount}} <br>
+<b>Uses in total:</b> {{totalCount}} <br>
 <b>Datatype:</b> {{datatype}} <br>
 <b>Related Properties:</b>
-<table>         <tr ng-repeat="property in relatedProperties">
-                <td> {{property}} </td>
-              </tr></table>
+<span ng-repeat="property in relatedProperties"> <a href= {{property.link}}>{{property.label}}</a>{{$last ? '' : ', '}}</span>
 </div>
