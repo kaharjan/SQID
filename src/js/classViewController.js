@@ -3,7 +3,7 @@ classBrowser.factory('ClassView', function($route, util, sparql, wikidataapi) {
 	var MAX_EXAMPLE_INSTANCES = 20;
 	var MAX_DIRECT_SUBCLASSES = 20;
 	var RELATED_PROPERTIES_THRESHOLD = 5;
-
+});
 
 
 classBrowser.factory('ClassView', function($http, $route, $q) {
