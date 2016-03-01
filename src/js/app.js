@@ -50,6 +50,14 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 				return defaultValue;
 			}
 		};
+		
+		var getAllPropertiesWithLabels = function() {
+			var ret = [];
+			for (var property in properties){
+				ret.push({id:"P" + property, label:properties[property]["l"]});
+			}
+			return ret;
+		};
 
 		var getLabel = function(id) { return getData(id, 'l', null); };
 		var getUrl = function(id) { return "#/propertyview?id=P" + id; };
@@ -94,6 +102,7 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 					getQualifiers: function(id){ return getData(qid, 'qs', []); },
 					getUrl: getUrl,
 					formatRelatedProperties: formatRelatedProperties,
+					getAllPropertiesWithLabels: getAllPropertiesWithLabels
 				}
 			});
 		}
@@ -112,6 +121,14 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 			}
 		};
 
+		var getAllClassesWithLabels = function() {
+			var ret = [];
+			for (var classe in classes){
+				ret.push({id:"Q" + classe, label:classes[classe]["l"]});
+			}
+			return ret;
+		};
+		
 		var getLabel = function(id){ return getData(id, 'l', null); };
 		var getUrl = function(id) { return "#/classview?id=Q" + id; };
 		var getAllInstanceCount = function(id){ return getData(id, 'ai', 0); };
@@ -145,7 +162,8 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 					getRelatedProperties: function(id){ return getData(id, 'r', {}); },
 					getSuperClasses: function(id){ return getData(id, 'sc', []); },
 					getUrl: getUrl,
-					getNonemptySubclasses: getNonemptySubclasses
+					getNonemptySubclasses: getNonemptySubclasses,
+					getAllClassesWithLabels: getAllClassesWithLabels
 				}
 			});
 		}
