@@ -1,17 +1,55 @@
 <div ng-controller="PropertyViewController">
-<h1><a href = {{url}}><b>{{propertyData.label}}</b> ({{pid}})</a></h1>
-<br>
-<div class="alert alert-warning" role="alert">This will be a property view.</div>
-<br>
+	<div class="mainbar col-lg-9 col-md-12 col-sm-12">
+		<h1>{{propertyData.label}} <small>(<a href="{{url}}" target="_blank">{{pid}}</a>)</small></h1>
+		<div ng-if="propertyData.aliases.length > 0" class="aliases">
+			<ul class="list-inline pipe-separated">
+				<li ng-repeat="alias in propertyData.aliases">{{alias}}</li>
+			</ul>
+		</div>
+		<div class="lead entity-description">
+			{{propertyData.description}}
+		</div>
+		<div class="lead property-datatype">
+			<b>Datatype:</b> {{datatype}}
+		</div>
+		
+		<div class="panel panel-info">
+			<div class="panel-heading"><h2 class="panel-title">
+			<a data-toggle="collapse" data-target="#statement_panel" style="cursor:pointer;cursor:hand">Uses in statements</a>
+			</h2></div>
+			<div id='statement_panel' class='panel-body panel-collapse collapse in'>
+				<div ng-if="statementCount>0">
+					<p>This property is used in <b>{{statementCount}}</b> statement<span ng-if="statementCount != 1">s</span>.</p>
+				</div>
+				<div ng-if="itemCount>0">
+					<p>This property is used in <b>{{itemCount}}</b> item<span ng-if="statementCount != 1">s</span> with statements with this property.</p>
+				</div>
+			</div>
+		</div>
+	
+	</div>
+	
+	<div class="sidebar col-md-3 col-md-12 col-sm-12">
+		<div class="panel panel-info">
+			<div class="panel-heading"><h2 class="panel-title">
+				External links
+			</h2></div>
+			<div class="padded">
+				<ul>
+					<li><a href="{{url}}" target="_blank">Wikidata page</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	
 
-<b>Aliases:</b> <span ng-repeat="alias in propertyData.aliases">{{alias}} {{$last ? '' : ' | '}}  </span><br>
-<b>Description:</b> {{propertyData.description}}<br>
+
 <b>Uses in statements:</b> {{statementCount}} <br>
 <b>Items with such statements:</b> {{itemCount}} <br>
 <b>Uses in qualifiers:</b> {{qualifierCount}} <br>
 <b>Uses in references:</b> {{referenceCount}} <br>
 <b>Uses in total:</b> {{totalCount}} <br>
-<b>Datatype:</b> {{datatype}} <br>
 <b>Related Properties:</b>
 <span ng-repeat="property in relatedProperties"> <a href= {{property.link}}>{{property.label}}</a>{{$last ? '' : ', '}}</span>
 </div>
