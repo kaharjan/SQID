@@ -22,7 +22,23 @@
 					<p>This property is used in <b>{{statementCount}}</b> statement<span ng-if="statementCount != 1">s</span>.</p>
 				</div>
 				<div ng-if="itemCount>0">
-					<p>This property is used in <b>{{itemCount}}</b> item<span ng-if="statementCount != 1">s</span> with statements with this property.</p>
+					<p>This property is used in <b>{{itemCount}}</b> item<span ng-if="itemCount != 1">s</span> with statements with this property.</p>
+					<div ng-if="exampleItems===null" style="padding: 20px;">
+						<i>Loading items with statements with this property &hellip;</i>
+					</div>
+					<div ng-if="exampleItems.length === 0" style="padding: 20px;">
+						<i>No item found. Maybe the data changed recently. Our records will be updated soon.</i>
+					</div>
+					<div ng-if="exampleItems.length > 0">
+						<div class="four-lines">
+							<ul class="list-inline comma-separated">
+								<li ng-repeat="item in exampleItems">
+									<a href="{{item.uri}}" target="_blank">{{item.label}}</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
 				</div>
 			</div>
 		</div>
@@ -42,11 +58,8 @@
 		</div>
 	</div>
 	
-	
 
 
-<b>Uses in statements:</b> {{statementCount}} <br>
-<b>Items with such statements:</b> {{itemCount}} <br>
 <b>Uses in qualifiers:</b> {{qualifierCount}} <br>
 <b>Uses in references:</b> {{referenceCount}} <br>
 <b>Uses in total:</b> {{totalCount}} <br>

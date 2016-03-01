@@ -28,6 +28,13 @@ angular.module('utilities', [])
 })
 
 .factory('util', function($http, $q) {
+	var isQid = function(id) {
+		if (id[0] == 'Q') {
+			return true;
+		}
+		return false;
+	};
+
 
 	var httpRequest = function(url) {
 		return $http.get(url).then(function(response) {
@@ -45,7 +52,8 @@ angular.module('utilities', [])
 	}
 	
 	return {
-		httpRequest: httpRequest
+		httpRequest: httpRequest,
+		isQid: isQid
 	};
 })
 
@@ -61,16 +69,22 @@ angular.module('utilities', [])
 	var getQueryUiUrl = function(sparqlQuery) {
 		return SPARQL_UI_PREFIX + encodeURIComponent(sparqlQuery);
 	}
+
 	
 	var getQueryForPropertySubjects = function(propertyId, objectId, limit) {
-		return "PREFIX wikibase: <http://wikiba.se/ontology#> \n\
+		var ret = "PREFIX wikibase: <http://wikiba.se/ontology#> \n\
 PREFIX wdt: <http://www.wikidata.org/prop/direct/> \n\
 PREFIX wd: <http://www.wikidata.org/entity/> \n\
 SELECT $p $pLabel \n\
 WHERE { \n\
-   $p wdt:" + propertyId + " wd:" + objectId + " . \n\
+   $p wdt:" + propertyId;
+	 if (util.isQid(objectId)){
+		 ret = ret + " wd:";
+	 } 
+	 ret = ret + objectId + " . \n\
    SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" . } \n\
 } LIMIT " + limit;
+		return ret;
 	}
 
 	var getPropertySubjects = function(propertyId, objectId, limit) {
