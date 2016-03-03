@@ -70,6 +70,36 @@ angular.module('utilities', [])
 		return SPARQL_UI_PREFIX + encodeURIComponent(sparqlQuery);
 	}
 
+	var getQueryForPropertiesInQualifieres = function(propertyId, limit) {
+		return "PREFIX wikibase: <http://wikiba.se/ontology#>\n\
+PREFIX q: <http://www.wikidata.org/prop/qualifier/>\n\
+SELECT DISTINCT ?sub ?subLabel\n\
+WHERE {\n\
+    ?sub ?p ?st .\n\
+  	?st q:" + propertyId + " ?val .\n\
+  	?irgendwas wikibase:qualifier q:" + propertyId + " . \n\
+      SERVICE wikibase:label {\n\
+    bd:serviceParam wikibase:language \"en\" .\n\
+   }\n\
+}\n\
+LIMIT " + limit;
+	}
+	
+	var getQueryForPropertiesInReferences = function(propertyId, limit) {
+		return "PREFIX wikibase: <http://wikiba.se/ontology#> \n\
+PREFIX pr: <http://www.wikidata.org/prop/reference/>\n\
+SELECT DISTINCT ?p ?pLabel\n\
+WHERE {\n\
+    ?p ?sth ?sub .\n\
+  	?sub prov:wasDerivedFrom ?ref .\n\
+    ?ref pr:" + propertyId + " ?val .\n\
+   SERVICE wikibase:label { \n\
+    bd:serviceParam wikibase:language \"en\" . \n\
+   }\n\
+}\n\
+LIMIT " + limit;
+	}
+	
 	
 	var getQueryForPropertySubjects = function(propertyId, objectId, limit) {
 		var ret = "PREFIX wikibase: <http://wikiba.se/ontology#> \n\
@@ -85,6 +115,16 @@ WHERE { \n\
    SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" . } \n\
 } LIMIT " + limit;
 		return ret;
+	}
+	
+	var getQualifierSubjects = function(propertyId, limit) {
+		var url = getQueryUrl(getQueryForPropertiesInQualifieres(propertyId, limit));
+		return util.httpRequest(url);
+	}
+	
+	var getReferenceSubjects = function(propertyId, limit) {
+		var url = getQueryUrl(getQueryForPropertiesInReferences(propertyId, limit));
+		return util.httpRequest(url);
 	}
 
 	var getPropertySubjects = function(propertyId, objectId, limit) {
@@ -137,6 +177,60 @@ SELECT (count(*) as $c) WHERE { $p wdt:" + propertyID + " wd:" + objectItemId + 
 		return instances;
 	}
 
+		var prepareQualifierQueryResult = function(data, propertyId, limit) {
+		qualifiers = [];
+		try {
+			var qualifierJson = data.results.bindings;
+			var element;
+			console.log(qualifierJson);
+			for (var i = 0; i < qualifierJson.length; i++) {
+				if ( i < limit-1 ) {
+					element = {
+						label: qualifierJson[i].subLabel.value,
+						uri: qualifierJson[i].sub.value
+					};
+				} else {
+					element = {
+						label: "... further results",
+						uri: getQueryUiUrl(getQueryForPropertiesInQualifieres(propertyId, 100))
+					};
+				}
+				qualifiers.push(element);
+			}
+		}
+		catch (err) {
+			//nothing to do here
+		}
+		return qualifiers;
+	}
+	
+	var prepareReferenceQueryResult = function(data, propertyId, limit) {
+		references = [];
+		try {
+			var referenceJson = data.results.bindings;
+			var element;
+			for (var i = 0; i < referenceJson.length; i++) {
+				if ( i < limit-1 ) {
+					element = {
+						label: referenceJson[i].pLabel.value,
+						uri: referenceJson[i].p.value
+					};
+				} else {
+					element = {
+						label: "... further results",
+						uri: getQueryUiUrl(getQueryForPropertiesInReferences(propertyId, 100))
+					};
+				}
+				references.push(element);
+			}
+		}
+		catch (err) {
+			//nothing to do here
+		}
+		return references;
+	}
+	
+	
 	var getIdFromUri = function(uri) {
 		if ( uri.substring(0, "http://www.wikidata.org/entity/".length) === "http://www.wikidata.org/entity/" ) {
 			return uri.substring("http://www.wikidata.org/entity/".length, uri.length);
@@ -149,9 +243,13 @@ SELECT (count(*) as $c) WHERE { $p wdt:" + propertyID + " wd:" + objectItemId + 
 		getQueryUrl: getQueryUrl,
 		getQueryUiUrl: getQueryUiUrl,
 		getInlinkCount: getInlinkCount,
+		getReferenceSubjects: getReferenceSubjects,
 		getPropertySubjects: getPropertySubjects,
+		getQualifierSubjects: getQualifierSubjects,
 		getIdFromUri: getIdFromUri,
-		prepareInstanceQueryResult: prepareInstanceQueryResult
+		prepareInstanceQueryResult: prepareInstanceQueryResult,
+		prepareReferenceQueryResult: prepareReferenceQueryResult,
+		prepareQualifierQueryResult: prepareQualifierQueryResult
 	};
 
 })

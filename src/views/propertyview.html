@@ -12,13 +12,17 @@
 		<div class="lead property-datatype">
 			<b>Datatype:</b> {{datatype}}
 		</div>
+		<div class="lead property-total-use">
+			<b>Uses in total:</b> {{totalCount}}
+		</div>
 		
+		<!-- statements -->
 		<div class="panel panel-info">
 			<div class="panel-heading"><h2 class="panel-title">
 			<a data-toggle="collapse" data-target="#statement_panel" style="cursor:pointer;cursor:hand">Uses in statements</a>
 			</h2></div>
 			<div id='statement_panel' class='panel-body panel-collapse collapse in'>
-				<div ng-if="statementCount>0">
+				<div>
 					<p>This property is used in <b>{{statementCount}}</b> statement<span ng-if="statementCount != 1">s</span>.</p>
 				</div>
 				<div ng-if="itemCount>0">
@@ -37,14 +41,106 @@
 								</li>
 							</ul>
 						</div>
-					</div>
-					
+					</div>	
 				</div>
+				<p ng-if="statementCount == 0">
+					This property is not used in any statement.
+				</p>
+				<p ng-if="itemCount == 0">
+					Hence, this property is not used in any item as a statement .
+				</p>
 			</div>
 		</div>
+			
+		<!-- qualifiers -->
+		<div class="panel panel-info">
+			<div class="panel-heading"><h2 class="panel-title">
+			<a data-toggle="collapse" data-target="#qualifier_panel" style="cursor:pointer;cursor:hand">Uses in qualifiers</a>
+			</h2></div>
+			<div id='qualifier_panel' class='panel-body panel-collapse collapse in'>
+				<div>
+					<p>This property is used in <b>{{qualifierCount}}</b> qualifier<span ng-if="statementCount != 1">s</span>.</p>
+				</div>
+				<div ng-if="exampleQualifiers===null" style="padding: 20px;">
+					<i>Loading qualifiers with this property &hellip;</i>
+				</div>
+				<div ng-if="exampleQualifiers.length === 0" style="padding: 20px;">
+					<i>No qualifier found. Maybe the data changed recently. Our records will be updated soon.</i>
+				</div>
+				<div ng-if="exampleQualifiers.length > 0">
+					<p>These are example items that have a qualifier using this property:</p>
+					<div class="four-lines">
+						<ul class="list-inline comma-separated">
+							<li ng-repeat="qualifier in exampleQualifiers">
+								<a href="{{qualifier.uri}}" target="_blank">{{qualifier.label}}</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<p ng-if="qualifierCount == 0">
+					This property is not used in any qualifier.
+				</p>
+			</div>
+		</div>
+		
+	<!-- references -->
+		<div class="panel panel-info">
+			<div class="panel-heading"><h2 class="panel-title">
+			<a data-toggle="collapse" data-target="#reference_panel" style="cursor:pointer;cursor:hand">Uses in references</a>
+			</h2></div>
+			<div id='reference_panel' class='panel-body panel-collapse collapse in'>
+				<div>
+					<p>This property is used in <b>{{referenceCount}}</b> reference<span ng-if="referenceCount != 1">s</span>.</p>
+				</div>
+				<div ng-if="exampleReferences===null" style="padding: 20px;">
+					<i>Loading references with this property &hellip;</i>
+				</div>
+				<div ng-if="exampleReferences.length === 0" style="padding: 20px;">
+					<i>No reference found. Maybe the data changed recently. Our records will be updated soon.</i>
+				</div>
+				<div ng-if="exampleReferences.length > 0">
+					<p>These are example items that have a reference using this property:</p>
+					<div class="four-lines">
+						<ul class="list-inline comma-separated">
+							<li ng-repeat="reference in exampleReferences">
+								<a href="{{reference.uri}}" target="_blank">{{reference.label}}</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<p ng-if="ReferenceCount == 0">
+					This property is not used in any reference.
+				</p>
+			</div>
+		</div>
+			<!-- related Properties -->
 	
-	</div>
+	<div class="panel panel-info">
+		<div class="panel-heading"><h2 class="panel-title">
+			<a data-toggle="collapse" data-target="#related_panel" style="cursor:pointer;cursor:hand">Related Properties</a>
+			</h2></div>
+			<div id='related_panel' class='panel-body panel-collapse collapse in'>
+				<div ng-if="relatedProperties.length > 0">
+					<p>These are properties that typically co-occur with this property:</p>
+					<div class="four-lines">
+						<ul class="list-inline comma-separated">
+							<li ng-repeat="property in relatedProperties">
+								<a href="{{property.link}}" target="_blank">{{property.label}}</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<p ng-if="relatedProperties.length == 0">
+					This property does not typically co-occur with any other property.
+				</p>
+			</div>
+		</div>
+	</div>		
+</div>
 	
+	
+	<!-- sidebar -->
 	<div class="sidebar col-md-3 col-md-12 col-sm-12">
 		<div class="panel panel-info">
 			<div class="panel-heading"><h2 class="panel-title">
@@ -57,12 +153,3 @@
 			</div>
 		</div>
 	</div>
-	
-
-
-<b>Uses in qualifiers:</b> {{qualifierCount}} <br>
-<b>Uses in references:</b> {{referenceCount}} <br>
-<b>Uses in total:</b> {{totalCount}} <br>
-<b>Related Properties:</b>
-<span ng-repeat="property in relatedProperties"> <a href= {{property.link}}>{{property.label}}</a>{{$last ? '' : ', '}}</span>
-</div>
