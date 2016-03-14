@@ -3,11 +3,6 @@ Zoomable treemap, based on http://bost.ocks.org/mike/treemap/
 -->
 <style>
 
-#chart {
-	background: #fff;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 
 text {
 	pointer-events: none;
@@ -56,13 +51,10 @@ rect.parent {
 </style>
 
 
+<div ng-controller="ClassHierarchyController">
 <form>
 	<label><input type="radio" name="mode" value="items" checked> Items</label>
 	<label><input type="radio" name="mode" value="subclasses"> Subclasses</label>
 </form>
 <div id="chart"></div>
-
-<script src="../lib/d3.min.js"></script>
-<script src="../js/classHierarchyController.js"></script>
-
-				
+</div>

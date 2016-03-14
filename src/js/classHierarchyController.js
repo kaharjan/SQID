@@ -1,5 +1,28 @@
+
+function getSubclasses(classes, ids, visited){
+	var ret = "";
+	for (i = 0; i <ids.length; i++){
+		item = ids[i].id;
+		ret = ret + "{\"key\": \"" + classes.getLabel(item) + "\", \"instances\": " + (classes.getAllInstanceCount(item) + 1); 
+		values = classes.getNonemptySubclasses(item);
+		if (values.length > 0) {
+			ret = ret + ", \"_children\": [" + getSubclasses(classes,values, visited) + "]";
+		}
+		ret = ret + "}";
+		if (i < ids.length - 1) {
+			ret = ret + ", ";
+		}
+	}
+	return ret;
+}
+
+classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
+	Classes.then(function(data){
+		console.log("fetch data");
+		var data = getSubclasses(data, [{id:"150"}], []);
+		console.log("display data");
 //var data = '{"key": "entities", "value": 4, "values": [{"key": "class1", "value": 5, "values": [{"key": "class1-1", "value":19, "values":[{"key": "class1-1-1", "value":13}]}, {"key": "class1-2", "value":15}, {"key": "class1-3", "value":5}]}, {"key": "class2", "value": 13, "values":[{"key": "class2-1", "value":26}, {"key": "class2-2", "value":31}]}] }';
-var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
+//var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
 
 var margin = {top: 24, right: 0, bottom: 0, left: 0},
 	theight = 36 + 16;
@@ -8,7 +31,7 @@ var margin = {top: 24, right: 0, bottom: 0, left: 0},
 
 var transitioning;
 
-var attribute = "subclasses";
+var attribute = "instances";
 
 var color = d3.scale.category20c();
 
@@ -53,10 +76,10 @@ grandparent.append("text")
 	
 var root = JSON.parse(data);
 	initialize(root);
-	accumulate(root);
+	//accumulate(root);
 	layout(root);
 	display(root);
-
+	
 function initialize(root) {
 	root.x = root.y = 0;
 	root.dx = width;
@@ -64,15 +87,6 @@ function initialize(root) {
 	root.depth = 0;
 }
 
-// Aggregate the values for internal nodes. This is normally done by the
-// treemap layout, but not here because of our custom implementation.
-// We also take a snapshot of the original children (_children) to avoid
-// the children being overwritten when when layout is computed.
-function accumulate(d) {
-	return (d._children = d.values)
-		? d[attribute] = d[attribute] + d.values.reduce(function(p, v) { return p + accumulate(v); }, 0)
-		: d[attribute];
-	}
 
 // Compute the treemap layout recursively such that each group of siblings
 // uses the same size (1×1) rather than the dimensions of the parent cell.
@@ -219,4 +233,6 @@ d3.selectAll("input").on("change", function change() {
 	var value = this.value === "items"
 		? function(d) { return d.value; }
 		: function(d) { return 1; };
+		});
 	});
+});

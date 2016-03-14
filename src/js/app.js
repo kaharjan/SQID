@@ -9,6 +9,7 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 			.when('/datatypes', { templateUrl: 'views/datatypes.html' })
 			.when('/about', { templateUrl: 'views/about.html' })
 			.when('/view', { templateUrl: 'views/view.html' })
+			.when('/classhierarchy', { templateUrl: 'views/classHierarchy.html'})
 			.otherwise({redirectTo: '/'});
 	})
 
@@ -164,7 +165,7 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 			for ( var i in subClasses ) {
 				var label = getLabel(subClasses[i]);
 				if ( label === null ) label = "Q" + subClasses[i];
-				ret.push( {label: label, url: getUrl(subClasses[i]), icount: getAllInstanceCount(subClasses[i])} );
+				ret.push( {label: label, id: subClasses[i], url: getUrl(subClasses[i]), icount: getAllInstanceCount(subClasses[i])} );
 			}
 			ret.sort(function(a, b) {
 				return a.icount < b.icount ? 1 : (a.icount > b.icount ? -1 : 0);
