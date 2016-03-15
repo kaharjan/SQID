@@ -1,16 +1,12 @@
-
-function getSubclasses(data, ids, count){
+function getSuperclassesTree(data, ids, count){
 	var ret = "";
 	if (count > 500){return;}
-	for (var i in ids){
-		var item = ids[i].id;
+	for (var i = 0; i < ids.length; i++){
+		var item = ids[i];
 		ret = ret + "{\"key\": \"" + data.getLabel(item) + "\", \"instances\": " + (data.getAllInstanceCount(item) + 1); 
-		var values = data.getNonemptySubclasses(item);
-		console.log(data.getLabel(item));
-		displayValues(values);
-		console.log("------");
+		var values = data.getSuperClasses(item);
 		if (values.length > 0) {
-			ret = ret + ", \"_children\": [" + getSubclasses(data,values, count++) + "]";
+			ret = ret + ", \"_children\": [" + getSuperclassesTree(data,values, count++) + "]";
 		}
 		ret = ret + "}";
 		if (i < ids.length - 1) {
@@ -20,19 +16,36 @@ function getSubclasses(data, ids, count){
 	return ret;
 }
 
-function displayValues(array){
-	var outp = "";
-	for (entry in array){
-		outp = outp + "," + array[entry].label;
+
+function getSubclassesTree(data, ids, count){
+	var ret = "";
+	if (count > 500){return;}
+	for (var i in ids){
+		var item = ids[i];
+		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1); 
+		var values = data.getNonemptySubclasses(item.id);
+		if (values.length > 0) {
+			ret = ret + ", \"_children\": [" + getSubclassesTree(data,values, count++) + "]";
+		}
+		ret = ret + "}";
+		if (i < ids.length - 1) {
+			ret = ret + ", ";
+		}
 	}
-	console.log(outp);
+	return ret;
 }
 
 classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
-	Classes.then(function(data){
+	Classes.then(function(classData){
 		console.log("fetch data");
-		var data = getSubclasses(data, [{id:"5"}], 0);
+		var qid = "5";
+		var label = classData.getLabel("5");
+		var icount = classData.getAllInstanceCount("5");
+		console.log(icount);
+		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount}], 0);
+		//var data = getSuperclassesTree(data, ["5"], 0);
 		console.log("display data");
+		console.log(data);
 		
 var margin = {top: 24, right: 0, bottom: 0, left: 0},
 	theight = 36 + 16;
