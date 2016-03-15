@@ -1,12 +1,16 @@
 
-function getSubclasses(classes, ids, visited){
+function getSubclasses(data, ids, count){
 	var ret = "";
-	for (i = 0; i <ids.length; i++){
-		item = ids[i].id;
-		ret = ret + "{\"key\": \"" + classes.getLabel(item) + "\", \"instances\": " + (classes.getAllInstanceCount(item) + 1); 
-		values = classes.getNonemptySubclasses(item);
+	if (count > 500){return;}
+	for (var i in ids){
+		var item = ids[i].id;
+		ret = ret + "{\"key\": \"" + data.getLabel(item) + "\", \"instances\": " + (data.getAllInstanceCount(item) + 1); 
+		var values = data.getNonemptySubclasses(item);
+		console.log(data.getLabel(item));
+		displayValues(values);
+		console.log("------");
 		if (values.length > 0) {
-			ret = ret + ", \"_children\": [" + getSubclasses(classes,values, visited) + "]";
+			ret = ret + ", \"_children\": [" + getSubclasses(data,values, count++) + "]";
 		}
 		ret = ret + "}";
 		if (i < ids.length - 1) {
@@ -16,14 +20,20 @@ function getSubclasses(classes, ids, visited){
 	return ret;
 }
 
+function displayValues(array){
+	var outp = "";
+	for (entry in array){
+		outp = outp + "," + array[entry].label;
+	}
+	console.log(outp);
+}
+
 classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 	Classes.then(function(data){
 		console.log("fetch data");
-		var data = getSubclasses(data, [{id:"150"}], []);
+		var data = getSubclasses(data, [{id:"5"}], 0);
 		console.log("display data");
-//var data = '{"key": "entities", "value": 4, "values": [{"key": "class1", "value": 5, "values": [{"key": "class1-1", "value":19, "values":[{"key": "class1-1-1", "value":13}]}, {"key": "class1-2", "value":15}, {"key": "class1-3", "value":5}]}, {"key": "class2", "value": 13, "values":[{"key": "class2-1", "value":26}, {"key": "class2-2", "value":31}]}] }';
-//var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
-
+		
 var margin = {top: 24, right: 0, bottom: 0, left: 0},
 	theight = 36 + 16;
 	width = 960 - margin.left - margin.right,
@@ -73,13 +83,16 @@ grandparent.append("text")
 	.attr("y", 6 - margin.top)
 	.attr("dy", ".75em");
 
+function formatValue(value){
+	return value - 1;
+}
 	
 var root = JSON.parse(data);
 	initialize(root);
 	//accumulate(root);
 	layout(root);
 	display(root);
-	
+
 function initialize(root) {
 	root.x = root.y = 0;
 	root.dx = width;
@@ -136,7 +149,7 @@ function display(d) {
 		.attr("class", "child")
 		.call(rect)
 		.append("title")
-		.text(function(d) { return d.key + " (" + d.value + ")"; });
+		.text(function(d) { return d.key + " (" + formatValue(d.value) + ")"; });
 		
 	children.append("text")
 		.attr("class", "ctext")
@@ -156,7 +169,7 @@ function display(d) {
 	
 	t.append("tspan")
 		.attr("dy", "1.0em")
-		.text(function(d) { return d.value; });
+		.text(function(d) { return formatValue(d.value); });
 	
 	t.call(text);
 	
