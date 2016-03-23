@@ -4,48 +4,8 @@ Zoomable treemap, based on http://bost.ocks.org/mike/treemap/
 <style>
 
 
-text {
-	pointer-events: none;
-}
-
-.grandparent text {
-	font-weight: bold;
-}
-
-rect {
-	fill: none;
-	stroke: #fff;
-}
-
-rect.parent,
-.grandparent rect {
-	stroke-width: 2px;
-}
-
-rect.parent {
-	pointer-events: none;
-}
-
-.grandparent rect {
-	fill: orange;
-}
-
-.grandparent:hover rect {
-	fill: #ee9700;
-}
-
-.children rect.parent,
-.grandparent rect {
-	cursor: pointer;
-}
-
-.children rect.parent {
-	fill: #bbb;
-	fill-opacity: .5;
-}
-
-.children:hover rect.child {
-	fill: #bbb;
+path {
+	stroke: #fff
 }
 
 </style>
