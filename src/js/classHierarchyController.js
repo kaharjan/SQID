@@ -52,9 +52,9 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 			radius = (Math.min(width, height) / 2) - 10;
 
 		var transitioning;
-
-		var attribute = "instances";
-
+		
+		var node;
+		
 		var color = d3.scale.category20c();
 
 		var x = d3.scale.linear()
@@ -65,7 +65,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 		
 		var partition = d3.layout.partition()
 			.children(function(d){ return d._children; })
-			.value(function(d){return d.instances;});
+			.value(function(d){ return d.instances; });
 		
 		var arc = d3.svg.arc()
 			.startAngle(function(d){ return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -77,45 +77,77 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 			.attr("width", width)
 			.attr("height", height)
 			.append("g")
-			.attr("transform", "translate(" + width/2 + "," + height/2 + ")")
-			.style("fill-opacity", 0.5);
-		
+			.attr("transform", "translate(" + width/2 + "," + height/2 + ")");
 	
 		var root = JSON.parse(data);
 		console.log(root);
-		svg.selectAll("path")
-			.data(partition.nodes(root))
+		node = root;
+		var path = svg.data([node])
+			.selectAll("path")
+			.data(partition.nodes)
 			.enter()
 				.append("path")
 				.attr("d", arc)
 				.style("fill", function(d) { return color((d.children ? d : d.parent).key); })
 				.on("click", click)
-				.text("blub13")
-			.append("title")
+				.each(stash);
+		svg.selectAll("path").append("title")
 				.text(function(d){return name(d)});
-		svg.selectAll("path").append("text")
-				.attr("x", 50)
-				.attr("y", 100)
-				.text(function(d) {return name(d)});
+		
+		d3.selectAll("input").on("change", function change() {
+			var value = this.value === "items"
+				? function(d) { return d.instances; }
+				: function() { return 1; }
+			path.data(partition.value(value).nodes)
+				.transition()
+				.duration(1000)
+				.attrTween("d", arcTweenData);
+		})
+		
+		function stash(d){
+			d.x0 = d.x;
+			d.dx0 = d.dx;
+		}
 		
 		function click(d) {
-			if(transitioning){
-				console.log(transitioning);
-				return;
-			}
-			transitioning = true;
-			svg.transition()
+			node = d;
+			console.log("clicked");
+			path.transition()
 				.duration(1000)
-				.tween("scale", function(){
-					var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-						yd = d3.interpolate(y.domain(), [d.y, 1]),
-						yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-					return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); };
-				})
-				.selectAll("path")
-					.attrTween("d", function(d) { return function(){ return arc(d); }; });
-			transitioning = false;
+				.attrTween("d", arcTweenZoom(d));
 		}
+		
+		function arcTweenData(a, i){
+			var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+			function tween(t) {
+				var b = oi(t);
+				a.x0 = b.x;
+				a.dx0 = b.dx;
+				return arc(b);
+			}
+			if (i == 0) {
+				var xd = d3.interpolate(x.domain(), [node.x, node.x + node.dx]);
+				return function(t) {
+					x.domain(xd(t));
+					return tween(t);
+				}
+			} else {
+				return tween;
+			}
+		}
+		
+		function arcTweenZoom(d) {
+			var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+			yd = d3.interpolate(y.domain(), [d.y, 1]),
+			yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+			return function(d, i) {
+				return i
+					? function(t) { return arc(d); }
+					: function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); }
+			}
+		}
+		
+		d3.select(self.frameElement).style("height", height + "px");
 		
 		function name(d) {
 			return d.key + " (" + d.value + ")";
