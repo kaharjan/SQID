@@ -6,7 +6,7 @@ function getSuperclassesTree(data, ids, count){
 		ret = ret + "{\"key\": \"" + data.getLabel(item) + "\", \"instances\": " + (data.getDirectInstanceCount(item) + 1); 
 		var values = data.getSuperClasses(item);
 		if (values.length > 0) {
-			ret = ret + ", \"_children\": [" + getSuperclassesTree(data,values, count++) + "]";
+			ret = ret + ", \"children\": [" + getSuperclassesTree(data,values, count++) + "]";
 		}
 		ret = ret + "}";
 		if (i < ids.length - 1) {
@@ -22,10 +22,10 @@ function getSubclassesTree(data, ids, count){
 	if (count > 500){return;}
 	for (var i in ids){
 		var item = ids[i];
-		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1); 
+		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1); 
 		var values = data.getNonemptySubclasses(item.id);
 		if (values.length > 0) {
-			ret = ret + ", \"_children\": [" + getSubclassesTree(data,values, count++) + "]";
+			ret = ret + ", \"children\": [" + getSubclassesTree(data,values, count++) + "]";
 		}
 		ret = ret + "}";
 		if (i < ids.length - 1) {
@@ -42,7 +42,8 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 		var qid = "6999";
 		var label = classData.getLabel(qid);
 		var icount = classData.getAllInstanceCount(qid);
-		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount}], 0);
+		var scount = classData.getAllSubclassCount(qid);
+		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0);
 		console.log(data);
 		//var data = getSuperclassesTree(data, ["5"], 0);
 		
@@ -51,7 +52,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 			height = 700,
 			radius = (Math.min(width, height) / 2) - 10;
 
-		var transitioning;
+		var attribute = "instances";
 		
 		var node;
 		
@@ -64,8 +65,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 			.range([0, radius]);
 		
 		var partition = d3.layout.partition()
-			.children(function(d){ return d._children; })
-			.value(function(d){ return d.instances; });
+			.value(function(d){ return d.subclasses; });
 		
 		var arc = d3.svg.arc()
 			.startAngle(function(d){ return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -96,12 +96,14 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 		
 		d3.selectAll("input").on("change", function change() {
 			var value = this.value === "items"
-				? function(d) { return d.instances; }
-				: function() { return 1; }
+				? function(d) { attribute = "instances"; return d.instances; }
+				: function(d) { attribute = "subclasses"; return d.subclasses; }
 			path.data(partition.value(value).nodes)
 				.transition()
 				.duration(1000)
 				.attrTween("d", arcTweenData);
+			svg.selectAll("path").select("title")
+				.text(function(d){return name(d);})
 		})
 		
 		function stash(d){
@@ -150,7 +152,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 		d3.select(self.frameElement).style("height", height + "px");
 		
 		function name(d) {
-			return d.key + " (" + d.value + ")";
+			return d.key + " (" + (d[attribute] - 1) + ")";
 		}
 	});
 });

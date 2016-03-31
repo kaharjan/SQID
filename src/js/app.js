@@ -158,14 +158,15 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 		var getLabel = function(id){ return getData(id, 'l', null); };
 		var getUrl = function(id) { return "#/view?id=Q" + id; };
 		var getAllInstanceCount = function(id){ return getData(id, 'ai', 0); };
-
+		var getAllSubclassCount = function(id){ return getData(id, 'as', 0); };
+		
 		var getNonemptySubclasses = function(id) {
 			var ret = [];
 			var subClasses = getData(id,'sb', []);
 			for ( var i in subClasses ) {
 				var label = getLabel(subClasses[i]);
 				if ( label === null ) label = "Q" + subClasses[i];
-				ret.push( {label: label, id: subClasses[i], url: getUrl(subClasses[i]), icount: getAllInstanceCount(subClasses[i])} );
+				ret.push( {label: label, id: subClasses[i], url: getUrl(subClasses[i]), icount: getAllInstanceCount(subClasses[i]), scount: getAllSubclassCount(subClasses[i])} );
 			}
 			ret.sort(function(a, b) {
 				return a.icount < b.icount ? 1 : (a.icount > b.icount ? -1 : 0);
@@ -185,7 +186,7 @@ var classBrowser = angular.module('classBrowserApp', ['ngAnimate', 'ngRoute', 'u
 					getDirectInstanceCount: function(id){ return getData(id, 'i', 0); },
 					getDirectSubclassCount: function(id){ return getData(id, 's', 0); },
 					getAllInstanceCount: getAllInstanceCount,
-					getAllSubclassCount: function(id){ return getData(id, 'as', 0); },
+					getAllSubclassCount: getAllSubclassCount,
 					getRelatedProperties: function(id){ return getData(id, 'r', {}); },
 					getSuperClasses: function(id){ return getData(id, 'sc', []); },
 					getMainUsageCount: getAllInstanceCount,
