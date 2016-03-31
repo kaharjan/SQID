@@ -37,9 +37,9 @@ function getSubclassesTree(data, ids, count){
 
 //var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
 
-classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
+classBrowser.controller('ClassHierarchyController', function($scope, Classes, $route) {
 	Classes.then(function(classData){
-		var qid = "6999";
+		var qid = ($route.current.params.id) ? parseInt(($route.current.params.id)) : "6999"
 		var label = classData.getLabel(qid);
 		var icount = classData.getAllInstanceCount(qid);
 		var scount = classData.getAllSubclassCount(qid);
@@ -113,7 +113,6 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 		
 		function click(d) {
 			node = d;
-			console.log("clicked");
 			path.transition()
 				.duration(1000)
 				.attrTween("d", arcTweenZoom(d));
@@ -149,7 +148,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes) {
 			}
 		}
 		
-		d3.select(self.frameElement).style("height", height + "px");
+		//d3.select(self.frameElement).style("height", height + "px");
 		
 		function name(d) {
 			return d.key + " (" + (d[attribute] - 1) + ")";
