@@ -17,15 +17,20 @@ function getSuperclassesTree(data, ids, count){
 }
 
 
-function getSubclassesTree(data, ids, count){
+function getSubclassesTree(data, ids, count, visited){
 	var ret = "";
 	if (count > 500){return;}
 	for (var i in ids){
 		var item = ids[i];
-		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1); 
-		var values = data.getNonemptySubclasses(item.id);
-		if (values.length > 0) {
-			ret = ret + ", \"children\": [" + getSubclassesTree(data,values, count++) + "]";
+		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1);
+		//console.log($.inArray(item.id, visited) >= 0)
+		if ($.inArray(item.id, visited) < 0){
+			//console.log(count + " - " + item.id + " - " + item.label + " - " + visited);
+			var values = data.getNonemptySubclasses(item.id);
+			if (values.length > 0) {
+				visited.push(item.id);
+				ret = ret + ", \"children\": [" + getSubclassesTree(data, values, count++, visited) + "]";
+			}
 		}
 		ret = ret + "}";
 		if (i < ids.length - 1) {
@@ -38,12 +43,13 @@ function getSubclassesTree(data, ids, count){
 //var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
 
 classBrowser.controller('ClassHierarchyController', function($scope, Classes, $route) {
+	console.log("aufgerufen");
 	Classes.then(function(classData){
 		var qid = ($route.current.params.id) ? parseInt(($route.current.params.id)) : "6999"
 		var label = classData.getLabel(qid);
 		var icount = classData.getAllInstanceCount(qid);
 		var scount = classData.getAllSubclassCount(qid);
-		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0);
+		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0, []);
 		console.log(data);
 		//var data = getSuperclassesTree(data, ["5"], 0);
 		
