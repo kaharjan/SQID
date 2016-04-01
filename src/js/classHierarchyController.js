@@ -23,13 +23,12 @@ function getSubclassesTree(data, ids, count, visited){
 	for (var i in ids){
 		var item = ids[i];
 		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1);
-		//console.log($.inArray(item.id, visited) >= 0)
 		if ($.inArray(item.id, visited) < 0){
-			//console.log(count + " - " + item.id + " - " + item.label + " - " + visited);
 			var values = data.getNonemptySubclasses(item.id);
 			if (values.length > 0) {
 				visited.push(item.id);
 				ret = ret + ", \"children\": [" + getSubclassesTree(data, values, count++, visited) + "]";
+				visited.pop(item.id);
 			}
 		}
 		ret = ret + "}";
@@ -154,7 +153,6 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			}
 		}
 		
-		//d3.select(self.frameElement).style("height", height + "px");
 		
 		function name(d) {
 			return d.key + " (" + (d[attribute] - 1) + ")";
