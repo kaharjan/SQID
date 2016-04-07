@@ -41,7 +41,7 @@ function getSubclassesTree(data, ids, count, visited){
 
 function annotateJsonWithValues( root, instValue, instNormalizer, subValue, subNormalizer ) {
 	root.inst = (root.instances/instNormalizer) * instValue;
-	console.log(root.inst + " - " + root.key);
+	//console.log(root.inst + " - " + root.key);
 	root.subcl = (root.subclasses/subNormalizer) * subValue;
 	var sumInstances = 0;
 	var sumSubclasses = 0;
@@ -78,7 +78,6 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 
 		var attribute = "instances";
 		
-		var node;
 		
 		var color = d3.scale.category20c();
 
@@ -102,8 +101,13 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			.attr("height", height)
 			.append("g")
 			.attr("transform", "translate(" + width/2 + "," + height/2 + ")");
-	
-		node = root;
+		
+		var legend = d3.select("#legend")
+			.append("p")
+			.text(" ")
+			.style("visibility", "hidden");
+		
+		var node = root;
 		var path = svg.data([node])
 			.selectAll("path")
 			.data(partition.nodes)
@@ -137,12 +141,16 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		
 		function mouseleave(d) {
 			d3.selectAll("path").style("opacity", 1);
+			
+			legend.style("visibility", "hidden");
 		}
 		
 		function mouseover(d) {
 			d3.selectAll("path").style("opacity", .3);
 			svg.selectAll("path").filter(function(node) {return node.key == d.key;})
 				.style("opacity", 1);
+			legend.style("visibility", "")
+				.text(buildParentsString(d));
 		}
 		
 		function click(d) {
@@ -182,6 +190,11 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			}
 		}
 		
+		function buildParentsString(d) {
+			return d.parent
+				? buildParentsString(d.parent) + " -> " + d.key
+				: d.key;
+		}
 		
 		function name(d) {
 			return d.key + " (" + (d[attribute] - 1) + ")";
