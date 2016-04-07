@@ -114,7 +114,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			.enter()
 				.append("path")
 				.attr("d", arc)
-				.style("fill", function(d) { return color((d.children ? d : d.parent).key); })
+				.style("fill", function(d) { return color(d.key); })
 				.on("click", click)
 				.on("mouseleave", mouseleave)
 				.on("mouseover", mouseover)
