@@ -39,17 +39,36 @@ function getSubclassesTree(data, ids, count, visited){
 	return ret;
 }
 
-//var data = '{"key": "entities", "subclasses": 4, "values": [{"key": "class1", "subclasses": 5, "values": [{"key": "class1-1", "subclasses":19, "values":[{"key": "class1-1-1", "subclasses":13}]}, {"key": "class1-2", "subclasses":15}, {"key": "class1-3", "subclasses":5}]}, {"key": "class2", "subclasses": 13, "values":[{"key": "class2-1", "subclasses":26}, {"key": "class2-2", "subclasses":31}]}] }';
+function annotateJsonWithValues( root, instValue, instNormalizer, subValue, subNormalizer ) {
+	root.inst = (root.instances/instNormalizer) * instValue;
+	console.log(root.inst + " - " + root.key);
+	root.subcl = (root.subclasses/subNormalizer) * subValue;
+	var sumInstances = 0;
+	var sumSubclasses = 0;
+	var size = -1;
+	if (root.children != undefined) {
+		var size = root.children.length;
+	}
+	for (var i = 0; i < size; i++) {
+		sumInstances = sumInstances + root.children[i].instances;
+		sumSubclasses = sumSubclasses + root.children[i].subclasses;
+	}
+	for (var i = 0; i < size; i++) {
+		annotateJsonWithValues( root.children[i], root.inst, sumInstances, root.subcl, sumSubclasses);
+	}
+	return root;
+}
+
 
 classBrowser.controller('ClassHierarchyController', function($scope, Classes, $route) {
-	console.log("aufgerufen");
 	Classes.then(function(classData){
 		var qid = ($route.current.params.id) ? parseInt(($route.current.params.id)) : "6999"
 		var label = classData.getLabel(qid);
 		var icount = classData.getAllInstanceCount(qid);
 		var scount = classData.getAllSubclassCount(qid);
-		var data = getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0, []);
-		console.log(data);
+		var data = JSON.parse(getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0, []));
+		var root = annotateJsonWithValues(data, data.instances, data.instances, data.subclasses, data.subclasses);
+		console.log(root);
 		//var data = getSuperclassesTree(data, ["5"], 0);
 		
 		//var margin = {top: 24, right: 0, bottom: 0, left: 0},
@@ -70,7 +89,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			.range([0, radius]);
 		
 		var partition = d3.layout.partition()
-			.value(function(d){ return d.subclasses; });
+			.value(function(d){ return d.inst; });
 		
 		var arc = d3.svg.arc()
 			.startAngle(function(d){ return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -84,8 +103,6 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			.append("g")
 			.attr("transform", "translate(" + width/2 + "," + height/2 + ")");
 	
-		var root = JSON.parse(data);
-		console.log(root);
 		node = root;
 		var path = svg.data([node])
 			.selectAll("path")
@@ -101,8 +118,8 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		
 		d3.selectAll("input").on("change", function change() {
 			var value = this.value === "items"
-				? function(d) { attribute = "instances"; return d.instances; }
-				: function(d) { attribute = "subclasses"; return d.subclasses; }
+				? function(d) { attribute = "instances"; return d.inst; }
+				: function(d) { attribute = "subclasses"; return d.subcl; }
 			path.data(partition.value(value).nodes)
 				.transition()
 				.duration(1000)
