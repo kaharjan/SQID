@@ -22,7 +22,7 @@ function getSubclassesTree(data, ids, count, visited){
 	if (count > 500){return;}
 	for (var i in ids){
 		var item = ids[i];
-		ret = ret + "{\"key\": \"" + item.label + "\", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1);
+		ret = ret + "{\"key\": \"" + item.label + "\", \"id\": " + item.id + ", \"instances\": " + (item.icount + 1) + ",\"subclasses\": " + (item.scount + 1);
 		if ($.inArray(item.id, visited) < 0){
 			var values = data.getNonemptySubclasses(item.id);
 			if (values.length > 0) {
@@ -147,7 +147,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		
 		function mouseover(d) {
 			d3.selectAll("path").style("opacity", .3);
-			svg.selectAll("path").filter(function(node) {return node.key == d.key;})
+			svg.selectAll("path").filter(function(node) {return node.id == d.id;})
 				.style("opacity", 1);
 			legend.style("visibility", "")
 				.text(buildParentsString(d));
