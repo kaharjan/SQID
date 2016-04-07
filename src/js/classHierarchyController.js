@@ -112,6 +112,8 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 				.attr("d", arc)
 				.style("fill", function(d) { return color((d.children ? d : d.parent).key); })
 				.on("click", click)
+				.on("mouseleave", mouseleave)
+				.on("mouseover", mouseover)
 				.each(stash);
 		svg.selectAll("path").append("title")
 				.text(function(d){return name(d)});
@@ -131,6 +133,16 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		function stash(d){
 			d.x0 = d.x;
 			d.dx0 = d.dx;
+		}
+		
+		function mouseleave(d) {
+			d3.selectAll("path").style("opacity", 1);
+		}
+		
+		function mouseover(d) {
+			d3.selectAll("path").style("opacity", .3);
+			svg.selectAll("path").filter(function(node) {return node.key == d.key;})
+				.style("opacity", 1);
 		}
 		
 		function click(d) {
