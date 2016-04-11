@@ -66,7 +66,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		var label = classData.getLabel(qid);
 		var icount = classData.getAllInstanceCount(qid);
 		var scount = classData.getAllSubclassCount(qid);
-		var data = JSON.parse(getSubclassesTree(classData, [{id:qid, label: label, icount: icount, scount: scount}], 0, []));
+		var data = JSON.parse(getSubclassesTree(classData, [{id:qid.toString(), label: label, icount: icount, scount: scount}], 0, []));
 		var root = annotateJsonWithValues(data, data.instances, data.instances, data.subclasses, data.subclasses);
 		console.log(root);
 		//var data = getSuperclassesTree(data, ["5"], 0);
