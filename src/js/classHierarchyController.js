@@ -79,7 +79,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		var attribute = "instances";
 		
 		
-		var color = d3.scale.category20c();
+		var color = d3.scale.category20b();
 
 		var x = d3.scale.linear()
 			.range([0, 2*Math.PI]);
@@ -114,7 +114,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 			.enter()
 				.append("path")
 				.attr("d", arc)
-				.style("fill", function(d) { return color(d.key); })
+				.style("fill", function(d) { return color(d.id); })
 				.on("click", click)
 				.on("mouseleave", mouseleave)
 				.on("mouseover", mouseover)
@@ -131,7 +131,8 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 				.duration(1000)
 				.attrTween("d", arcTweenData);
 			svg.selectAll("path").select("title")
-				.text(function(d){return name(d);})
+				.text(function(d){return name(d);});
+			svg.selectAll("path").style("fill", function(d) {return color(d.id); });
 		})
 		
 		function stash(d){
@@ -146,7 +147,7 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		}
 		
 		function mouseover(d) {
-			d3.selectAll("path").style("opacity", .3);
+			d3.selectAll("path").style("opacity", .2);
 			svg.selectAll("path").filter(function(node) {return node.id == d.id;})
 				.style("opacity", 1);
 			legend.style("visibility", "")
@@ -154,10 +155,14 @@ classBrowser.controller('ClassHierarchyController', function($scope, Classes, $r
 		}
 		
 		function click(d) {
-			node = d;
-			path.transition()
-				.duration(1000)
-				.attrTween("d", arcTweenZoom(d));
+			if (d.children){
+				node = d;
+				path.transition()
+					.duration(1000)
+					.attrTween("d", arcTweenZoom(d));
+			} else {
+				window.location.href = "#classhierarchy?id=" + d.id;
+			}
 		}
 		
 		function arcTweenData(a, i){
