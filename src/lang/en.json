@@ -133,7 +133,30 @@
 	"NOSUCHENTITY_BODY": "Maybe it was deleted. Maybe it never existed. Maybe we'll never know.",
 
 	"QUERY": {
-		"RUN": {
+		"FORM": {
+			"CLASS_SELECTOR_LABEL": "Class",
+			"CLASS_SELECTOR_PLACEHOLDER": "Type to search...",
+			"DIRECT_INSTANCES": "@:SEC_INSTANCES.DIRECT_INSTANCES",
+			"ALL_INSTANCES": "@:SEC_INSTANCES.ALL_INSTANCES",
+			"ALL_INSTANCES_HINT": "All unique instances of this class and its direct and indirect subclasses",
+			"DIRECT_SUBCLASSES": "@:SEC_CLASSIFICATION.DIRECT_SUBCLASSES",
+			"ALL_SUBCLASSES": "@:SEC_CLASSIFICATION.ALL_SUBCLASSES",
+			"ALL_SUBCLASSES_HINT": "Unique direct and indirect subclasses",
+			"PROPERTY_FILTERS_HEADING": "Filter by statements",
+			"ADD_PROPERTY_FILTER": "Add Filter",
+			"ADD_PROPERTY_FILTER_PLACEHOLDER": "Search/Select a property",
+			"PROPERTY_FILTER_ANY_VALUE": "with any value",
+			"LIMIT_RESULTS_LABEL": "Fast query (only 10,000 results)",
+			"BIG_QUERY_WARNING": "This is a pretty big query. It may work slowly or not at all. Be warned.",
+			"SUBMIT": "Run query" 
+		},
+		"RESPONSE": {
+			"SUCCESS_MESSAGE": "Query returned {{n}} results.",
+			"FAILURE_MESSAGE": "Query failed with the following response",
+			"TH_ENTITY": "Entity",
+			"TH_DESCRIPTION": "Description"
+		},
+		"RUN": { 
 			"BTN_SHOW": "Show query",
 			"BTN_HIDE": "Hide query",
 			"BTN_OPEN_WDQS": "Open in Wikidata Query Service"

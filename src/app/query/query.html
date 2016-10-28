@@ -10,8 +10,8 @@
 				</script>
 				<!-- /template -->
 
-				<label for="qry-form-class">Class</label>
-				<input type="text" id="qry-form-class" class="form-control" placeholder="Select a class" autocomplete="off"
+				<label for="qry-form-class" translate>QUERY.FORM.CLASS_SELECTOR_LABEL</label>
+				<input type="text" id="qry-form-class" class="form-control" placeholder="{{'QUERY.FORM.CLASS_SELECTOR_PLACEHOLDER' | translate}}" autocomplete="off"
 					ng-model="classSelectHandler"
 					ng-model-options="classSelectModelOptions"
 					typeahead-template-url="qry-form-class-typeahead.html"
@@ -20,44 +20,53 @@
 			<div data-ng-show="qui.selectedClass" class="form-group">
 				<!--<p><a href="#/classview?id={{qui.selectedClass.originalObject.qid}}">{{qui.selectedClass.originalObject.qid}}</a></p>-->
 				<div class="radio-inline"><label>
-   					<input type="radio" name="offspring" id="offspring-i" value="i" ng-model="qui.offspring" ng-change="buildSparql()"  checked>
-   					Direct instances <span class="info-badge">{{qui.selectedClass.i}}</span>
+   					<input type="radio" name="offspring" id="offspring-i" value="i" ng-model="qui.offspring" ng-change="buildSparql()" checked>
+   					{{'QUERY.FORM.DIRECT_INSTANCES' | translate}} <span class="info-badge">{{qui.selectedClass.i}}</span>
 				</label></div>
-				<div class="radio-inline"><label>
+				<div class="radio-inline"><label uib-tooltip="{{'QUERY.FORM.ALL_INSTANCES_HINT' | translate}}">
    					<input type="radio" name="offspring" id="offspring-ai" value="ai" ng-model="qui.offspring" ng-change="buildSparql()">
-   					Total instances <span class="info-badge">{{qui.selectedClass.ai}}</span>
+   					{{'QUERY.FORM.ALL_INSTANCES' | translate}} <span class="info-badge">{{qui.selectedClass.ai}}</span>
 				</label></div><div class="radio-inline"><label>
    					<input type="radio" name="offspring" id="offspring-s" value="s" ng-model="qui.offspring" ng-change="buildSparql()">
-   					Direct subclasses <span class="info-badge">{{qui.selectedClass.s}}</span>
-				</label></div><div class="radio-inline"><label>
+   					{{'QUERY.FORM.DIRECT_SUBCLASSES' | translate}}<span class="info-badge">{{qui.selectedClass.s}}</span>
+				</label></div><div class="radio-inline"><label uib-tooltip="{{'QUERY.FORM.ALL_SUBCLASSES_HINT' | translate}}">
    					<input type="radio" name="offspring" id="offspring-as" value="as" ng-model="qui.offspring" ng-change="buildSparql()">
-   					Total subclasses <span class="info-badge">{{qui.selectedClass.as}}</span>
+   					{{'QUERY.FORM.ALL_SUBCLASSES' | translate}} <span class="info-badge">{{qui.selectedClass.as}}</span>
 				</label></div>
 			</div>
 
-			<div data-ng-show="qui.selectedClass" class="form-group">
-				<script type="text/ng-template" id="qry-form-property-typeahead.html">
-					<a><span ng-bind-html="match.model.title | uibTypeaheadHighlight:query"></span></a>
-				</script>
-				<label for="qry-form-property">Add Property Filter</label>
-				<input type="text" id="qry-form-property" class="form-control" placeholder="Select a property"
-					ng-model="propertyAddHandler"
-					ng-model-options="classSelectModelOptions"
-					typeahead-min-length="0"
-					typeahead-focus-on-select="false"
-					typeahead-template-url="qry-form-property-typeahead.html"
-					uib-typeahead="property as property.title for property in propertySearch($viewValue)">
-			</div>
-			<div data-ng-show="qui.selectedProperties.stack.length" class="qry-filter-list">
-				<div class="panel panel-default" ng-repeat="p in qui.selectedProperties.stack">
-					<header class="panel-heading">{{p.label}} (<a href="{{p.url}}">P{{p.id}}</a>)
-						<button type="button" class="close" ng-click="qui.selectedProperties.remove($index); buildSparql();" aria-label="Remove"><span aria-hidden="true">&times;</span></button>
-					</header>
-					<div class="panel-body">
-						(any value)
+
+			<div data-ng-show="qui.selectedClass" class="panel">
+				<div class="panel-heading" data-toggle="collapse" data-target="#property_filters"><h2 class="panel-title" translate>QUERY.FORM.PROPERTY_FILTERS_HEADING</h2></div>
+				<div id="property_filters" class="panel-collapse collapse in">
+					<div data-ng-show="qui.selectedProperties.stack.length" class="qry-filter-list">
+						<div class="panel panel-default" ng-repeat="p in qui.selectedProperties.stack">
+							<header class="panel-heading">{{p.label}} (<a href="{{p.url}}">P{{p.id}}</a>)
+								<button type="button" class="close" ng-click="qui.selectedProperties.remove($index); buildSparql();" aria-label="Remove"><span aria-hidden="true">&times;</span></button>
+							</header>
+							<div class="panel-body">
+								{{'QUERY.FORM.PROPERTY_FILTER_ANY_VALUE' | translate}}
+							</div>
+						</div>
+					</div>
+					<div data-ng-show="qui.selectedClass" class="form-group">
+						<script type="text/ng-template" id="qry-form-property-typeahead.html">
+							<a><span ng-bind-html="match.model.title | uibTypeaheadHighlight:query"></span></a>
+						</script>
+						<div class="input-group">
+							<div class="input-group-addon" translate>QUERY.FORM.ADD_PROPERTY_FILTER</div>
+							<input type="text" id="qry-form-property" class="form-control" placeholder="{{'QUERY.FORM.ADD_PROPERTY_FILTER_PLACEHOLDER' | translate}}"
+								ng-model="propertyAddHandler"
+								ng-model-options="classSelectModelOptions"
+								typeahead-min-length="0"
+								typeahead-focus-on-select="false"
+								typeahead-template-url="qry-form-property-typeahead.html"
+								uib-typeahead="property as property.title for property in propertySearch($viewValue)">
+						</div>
 					</div>
 				</div>
 			</div>
+			
 
 			<div ng-show="resultListMode">
 				<button class="btn btn-info" ng-click="qui.showQuery = !qui.showQuery" translate>
@@ -78,34 +87,34 @@
 			<div data-ng-show="qui.sparqlQuery" class="form-group">
 				<button type="submit" class="btn" id="qry-submit-sparql" ng-show="!resultListMode" ng-class="{
 					'btn-primary': !qui.queryParms.heavy || qui.queryParms.limitResults, 
-					'btn-warning': qui.queryParms.heavy && !qui.queryParms.limitResults}">Run query</button>
+					'btn-warning': qui.queryParms.heavy && !qui.queryParms.limitResults}" translate>QUERY.FORM.SUBMIT</button>
 				<label ng-show="qui.queryParms.big" class="checkbox-inline">&nbsp;
-					<input type="checkbox" name="limitResults" ng-model="qui.queryParms.limitResults" ng-click="buildSparql()"> Fast query (only 10,000 results)
+					<input type="checkbox" name="limitResults" ng-model="qui.queryParms.limitResults" ng-click="buildSparql()">{{'QUERY.FORM.LIMIT_RESULTS_LABEL' | translate}}
 				</label>
 			</div>
 			<div class="alert alert-warning" ng-show="qui.queryParms.heavy && !qui.queryParms.limitResults">
 				<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> 
-				This is a pretty big query. It may work slowly or not at all. Be warned.
+				{{'QUERY.FORM.BIG_QUERY_WARNING' | translate}}
 			</div>
 		</form>
 
 		<div class="alert alert-danger blending" role="alert" data-ng-show="qui.queryError">
 			<button type="button" class="close" ng-click="qui.queryError = null" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> <strong>Query failed with the following response</strong>:
+			<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> <strong translate>QUERY.RESPONSE.FAILURE_MESSAGE</strong>:
   			<pre class="well-sm">{{qui.queryError}}</pre>
 		</div>
 
 		<div class="alert alert-success blending" role="alert" data-ng-show="qui.showQuerySuccess">
 			<button type="button" class="close" ng-click="qui.querySuccess = null" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Query returned <span class="info-badge">{{qui.pagination.index.length}}</span> results.
+			<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span><span ng-bind-html="qui.querySuccessMessage | to_trusted"></span>
 		</div>
 
 		<div data-ng-show="qui.pagination.activeIndex.length" data-ng-controller="PaginationController">
 			<table class="table table-condensed">
 				<thead>
 					<tr>
-						<th>Entity</th>
-						<th>Description</th>
+						<th translate>QUERY.RESPONSE.TH_ENTITY</th>
+						<th translate>QUERY.RESPONSE.TH_DESCRIPTION</th>
 					</tr>
 				</thead>
 				<tbody>

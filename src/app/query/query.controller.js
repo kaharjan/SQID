@@ -14,8 +14,8 @@ define([
 
 
 angular.module('sparqly').controller('QueryController', [
-'$scope', '$routeParams', 'spinner', 'classes', 'properties', 'i18n', 'sparql', 'wikidataapi', 'queryInterfaceState', 
-function($scope, $routeParams, spinner, Classes, Properties, i18n, sparql, wikidataapi, qisService) {
+'$scope', '$routeParams', 'spinner', 'classes', 'properties', 'i18n', 'sparql', 'wikidataapi', 'queryInterfaceState', '$translate', 
+function($scope, $routeParams, spinner, Classes, Properties, i18n, sparql, wikidataapi, qisService, $translate) {
 
 	var qis; // query interface state (usually points to qisService)
 	$scope.resultListMode = $routeParams.run !== undefined; // for instantly showing results of a predefined sparql query
@@ -31,6 +31,14 @@ function($scope, $routeParams, spinner, Classes, Properties, i18n, sparql, wikid
 			if(qis.pagination === undefined) { qis.pagination = jQuery.extend({}, pgnt); }
 			return qis.pagination;
 	}	};
+
+	$scope.translations = {
+		// resultListLength: function() {
+		// 	return '<span class="info-badge">' + 'zozozoz</span>';
+		// 	//		qis.pagination.activeIndex.length + '</span>';
+		// }
+		resultListLength: function() { return '999929293239'; }
+	}
 
 
 
@@ -215,6 +223,12 @@ function($scope, $routeParams, spinner, Classes, Properties, i18n, sparql, wikid
 			spin.stop();
 		};
 		var showSuccess = function() {
+			/* note: I created the translated string in the controller because I wanted to wrap the
+			 * {{variable}} replacement in markup. kind of ugly but couldn't figure out a better way */
+			$translate('QUERY.RESPONSE.SUCCESS_MESSAGE', {
+				n: '<span class="info-badge">' + qis.pagination.index.length + '</span>'}).then(function(msg) {
+					qis.querySuccessMessage = msg;
+				});
 			qis.showQuerySuccess = true;
 			setTimeout(function() { qis.showQuerySuccess = false; }, 2000); // show it for at least 2 seconds
 			// actually the observer only seems to react when some other action in the ui is taken
