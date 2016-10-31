@@ -32,15 +32,6 @@ function($scope, $routeParams, spinner, Classes, Properties, i18n, sparql, wikid
 			return qis.pagination;
 	}	};
 
-	$scope.translations = {
-		// resultListLength: function() {
-		// 	return '<span class="info-badge">' + 'zozozoz</span>';
-		// 	//		qis.pagination.activeIndex.length + '</span>';
-		// }
-		resultListLength: function() { return '999929293239'; }
-	}
-
-
 
 	/////////////////////////////
 	/// class selection input //
