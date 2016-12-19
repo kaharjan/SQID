@@ -595,8 +595,8 @@ SELECT DISTINCT ?p { \n\
 				if (minPrecision <= 10){
 					return (v1Splits.slice(0,2).join() == v2Splits.slice(0,2).join());
 				}
-				if (minPrecision > 10){
-					return (v1Splits.join() == v2Splits.join());	
+				if (minPrecision <= 11){
+					return (v1.value.time.split('T')[0] == v2.value.time.split('T')[0]);	
 				}
 			}
 			return (v1.value.time == v2.value.time);
