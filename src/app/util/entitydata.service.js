@@ -585,6 +585,20 @@ SELECT DISTINCT ?p { \n\
 		}
 
 		if (v1.type == 'time'){
+			minPrecision = Math.min(v1.value.precision, v1.value.precision);
+			if (minPrecision){
+				v1Splits = v1.value.time.split('-');
+				v2Splits = v2.value.time.split('-');
+				if (minPrecision <= 9){
+					return (v1Splits[0] == v2Splits[0]);
+				}
+				if (minPrecision <= 10){
+					return (v1Splits.slice(0,2).join() == v2Splits.slice(0,2).join());
+				}
+				if (minPrecision > 10){
+					return (v1Splits.join() == v2Splits.join());	
+				}
+			}
 			return (v1.value.time == v2.value.time);
 		}
 
