@@ -70,6 +70,9 @@ angular.module('util').factory('dataFormatter', ['util', 'i18n', function(util, 
 				if (short && displayString.length > 15) {
 					displayString = displayString.substring(0,6) + "..." + displayString.substring(displayString.length-6);
 				}
+                if ('__sqid_display_string_override__' in datavalue) {
+                    displayString = datavalue.__sqid_display_string_override__;
+                }
 				switch (properties.getDatatype(numPropId)) {
 					case 'Url':
 						return '<a class="ext-link" href="' + datavalue.value + '" target="_blank" ng-click="$event.stopPropagation()">' + displayString + '</a>';
